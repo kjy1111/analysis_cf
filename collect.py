@@ -51,7 +51,6 @@ def proc_nene(xml):
     root = et.fromstring(xml)
     results = []
 
-
     for el in root.findall('item'):
         name = el.findtext('aname1')
         sido = el.findtext('aname2')
@@ -114,6 +113,7 @@ def crawling_kyochon():
         if sido1 == 17:
             break
 
+
 def crawling_goobne():
     url = 'http://www.goobne.co.kr/store/search_store.jsp'
 
@@ -160,10 +160,49 @@ def crawling_goobne():
     table.to_csv('{0}/goobne_table.csv'.format(RESULT_DIRECTORY), encoding='utf-8', mode='w', index=True)
 
 
+def crawling_boor():
+    url = 'http://www.boor.co.kr/store/store.aspx'
+
+    # 첫페이지 로딩
+    wd = webdriver.Chrome('D:/ProgramData_Yeon/chromedriver/chromedriver.exe')
+    wd.get(url)
+
+    time.sleep(3)
+
+    # print(wd)
+
+    for page in count(start=1):
+        # 자바스크립트 실행
+        script = 'JavaScript:Page(%d)' % page
+        wd.execute_script(script)
+        print('%s: success for script execute [%s]' % (datetime.now(), script))
+        time.sleep(3)
+
+        # 실행결과 HTML(rendering된 HTML) 가져오기
+        html = wd.page_source
+
+        # parsing with bs4
+        bs = BeautifulSoup(html, 'html.parser')
+        tag_tbody = bs.findAll('div', attrs={'class': 'sto_add_box'})
+
+        # 마지막 검출
+        if len(tag_tbody) == 0:
+            break
+
+        for tag_tr in tag_tbody:
+            strings = list(tag_tr.strings)
+
+            name = strings[2]
+            addres = strings[6]
+            sido = addres.split()[:2]
+
+            print((name, addres) + tuple(sido))
+
+
 if __name__ == '__main__':
 
     # pelicana
-    # crawling_pelicana()
+    crawling_pelicana()
 
     # nene
     # cw.crawling(url='http://nenechicken.com/subpage/where_list.asp?target_step2=%s&proc_type=step1&target_step1=%s'
@@ -175,5 +214,7 @@ if __name__ == '__main__':
     # crawling_kyochon()
 
     # goobne
-    crawling_goobne()
+    # crawling_goobne()
 
+    # boor
+    # crawling_boor()

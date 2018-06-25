@@ -20,6 +20,7 @@ def ex1():
     tag = bs.td
     print(tag.div)
 
+
 # 2. attribute 값
 def ex2():
     bs = BeautifulSoup(html, 'html.parser')
@@ -42,7 +43,6 @@ def ex3():
 
     tag = bs.find(attrs={'class': 'tit3'})
     print(tag)
-
 
 
 if __name__ == '__main__':
